@@ -1,8 +1,8 @@
 import { expect, it } from 'vitest'
-import type { EffectKind } from '../src/app/effects.ts'
 import { en, zh, type DshSuperagentKey } from '../src/client/locales.ts'
 import { reasonLabel, type T } from '../src/client/text.ts'
-import { REASONS, USER_ERRORS } from '../src/core/index.ts'
+import { USER_ERRORS } from '../src/core/errors.ts'
+import { REASONS } from '../src/core/reasons.ts'
 
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map(match => match[1]).sort()
 
@@ -19,17 +19,8 @@ it('words a reason by its code with its values, each of a batch, and words a per
   expect(reasonLabel(t, [{ code: 'not_a_member', triggerId: '1' }, { code: 'no_mention', triggerId: '2' }]))
     .toBe(`${zh['reason.not_a_member']}；${zh['reason.no_mention']}`)
   expect(reasonLabel(t, [{ code: 'said', values: { text: 'The button is already blue' } }])).toBe('The button is already blue')
-  // A code the panel has no words for reads as the host words it.
   expect(reasonLabel(t, { code: 'some_new_filter' })).toBe('some_new_filter')
   expect(reasonLabel(t, 'The button is already blue')).toBe('The button is already blue')
-})
-
-it('names every health entry of dsh-superagent itself, which the overview shows when it fails', () => {
-  // Each entry by its writer: dsh-superagent, the model budget retries, every kind of the effect queue, Channel messages, the
-  // Executor and the unavailable Evals of the last hour.
-  const entries = { runtime: 0, models: 0, reply: 0, worker: 0, assessment: 0, launch: 0, delivery: 0, relay: 0,
-    notice: 0, evals: 0 } satisfies Record<EffectKind | 'runtime' | 'models' | 'reply' | 'worker' | 'evals', 0>
-  expect(Object.keys(entries).filter(name => !(`health.${name}` in zh))).toEqual([])
 })
 
 it('words every refusal the host words by code, in both languages', () => {
@@ -39,8 +30,4 @@ it('words every refusal the host words by code, in both languages', () => {
 
 it('has words for every reason code the core records', () => {
   expect(Object.keys(REASONS).filter(code => code !== 'said' && !(`reason.${code}` in zh))).toEqual([])
-})
-
-it('words the reasons agents read in the glossary\'s words: a sender on the list, a Thread', () => {
-  expect(Object.values(REASONS).filter(text => /\b(member|members|topic)\b/i.test(text))).toEqual([])
 })

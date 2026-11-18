@@ -1,10 +1,10 @@
 /**
  * Per-scope admission matrix classifying incoming messages as explicit requests, inferred candidates, or ignored.
  * A listed sender who addresses the agent always makes an explicit request (no table cell); an unaddressed message cannot be explicit.
+ *
+ * Temporary coupling: canonical copy also lives in `dsh-superagent-backend`.
  */
-import type { AdmissionCell } from './core/model.ts'
-
-export type { AdmissionCell }
+export type AdmissionCell = 'listedUnaddressed' | 'unlistedAddressed' | 'unlistedUnaddressed'
 export type Admission = 'explicit' | 'inferred' | 'ignore'
 export const ADMISSION_OPTIONS = { listedUnaddressed: ['inferred', 'ignore'], unlistedAddressed: ['explicit', 'inferred', 'ignore'],
   unlistedUnaddressed: ['inferred', 'ignore'] } as const satisfies Record<AdmissionCell, readonly Admission[]>
